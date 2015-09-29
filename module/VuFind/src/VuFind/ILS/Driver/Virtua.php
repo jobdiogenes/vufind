@@ -1682,7 +1682,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     /**
      * Fake a virtua login on the patron's behalf.
      *   - Return a session id.
-     *
+     * @modifiedby Job Diogenes Ribeiro Borges <github.com/jobdiogenes>
      * @param array $patron Array with cat_username/cat_password keys
      *
      * @return string       Session ID
@@ -1691,15 +1691,16 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     {
         // Get the iPortal server
         $web_server = $this->config['Catalog']['webhost'];
-
-        $virtua_url = "http://$web_server/cgi-bin/chameleon";
+        $cgi_token = $this->config['Catalog']['cgi_token'];
+        
+        $virtua_url = "http://$web_server" . "$cgi_token";
         $postParams = [
             "SourceScreen" => "INITREQ",
             "conf" => ".&#047;chameleon.conf",
             "elementcount" => "1",
             "function" => "PATRONATTEMPT",
             "host" => $this->config['Catalog']['host_string'],
-            "lng" => "en",
+            "lng" => $this->config['Catalog']['language'],
             "login" => "1",
             "pos" => "1",
             "rootsearch" => "KEYWORD",
