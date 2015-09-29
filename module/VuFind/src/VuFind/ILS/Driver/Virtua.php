@@ -22,6 +22,7 @@
  * @category VuFind2
  * @package  ILS_Drivers
  * @author   Greg Pendlebury <vufind-tech@lists.sourceforge.net>
+ * @modifiedby Job Diogenes Ribeiro Borges <github.com/jobdiogenes>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
@@ -1541,7 +1542,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         // Get the iPortal server
         $web_server = $this->config['Catalog']['webhost'];
-
+        $cgi_token = $this->config['Catalog']['cgi_token'];
+        
         // Validate input
         //  * Request level
         $allowed_req_levels = [
@@ -1568,7 +1570,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         }
 
         // Still here? Guess the request is valid, lets send it to virtua
-        $virtua_url = "http://$web_server/cgi-bin/chameleon?" .
+        $virtua_url = "http://$web_server" . "$cgi_token" ."chameleon?" .
             // Standard stuff
             "search=NOSRCH&function=REQUESTS&reqreqtype=0&reqtype=0" .
             "&reqscr=2&reqreqlevel=2&reqidtype=127&reqmincircperiod=" .
@@ -1651,8 +1653,9 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     {
         // Get the iPortal server
         $web_server = $this->config['Catalog']['webhost'];
-
-        $virtua_url = "http://$web_server/cgi-bin/chameleon?" .
+        $cgi_token = $this->config['Catalog']['cgi_token'];
+        
+        $virtua_url = "http://$web_server" . "$cgi_token" . "chameleon?" .
             // Standard stuff
             "search=NOSRCH&function=REQUESTS&reqreqtype=1&reqtype=0" .
             "&reqscr=4&reqreqlevel=2&reqidtype=127" .
@@ -1682,7 +1685,6 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     /**
      * Fake a virtua login on the patron's behalf.
      *   - Return a session id.
-     * @modifiedby Job Diogenes Ribeiro Borges <github.com/jobdiogenes>
      * @param array $patron Array with cat_username/cat_password keys
      *
      * @return string       Session ID
@@ -1693,7 +1695,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $web_server = $this->config['Catalog']['webhost'];
         $cgi_token = $this->config['Catalog']['cgi_token'];
         
-        $virtua_url = "http://$web_server" . "$cgi_token";
+        $virtua_url = "http://$web_server" . "$cgi_token" . "chameleon";
         $postParams = [
             "SourceScreen" => "INITREQ",
             "conf" => ".&#047;chameleon.conf",
@@ -1769,11 +1771,12 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         // Get the iPortal server
         $web_server = $this->config['Catalog']['webhost'];
-
+        $cgi_token = $this->config['Catalog']['cgi_token'];
+        
         // Fake a login to get an authenticated session
         $session_id = $this->fakeLogin($patron);
 
-        $virtua_url = "http://$web_server/cgi-bin/chameleon";
+        $virtua_url = "http://$web_server" . "$cgi_token" . "chameleon";
 
         // Have to use raw post data because of the way
         //   virtua expects the barcodes to come across.
